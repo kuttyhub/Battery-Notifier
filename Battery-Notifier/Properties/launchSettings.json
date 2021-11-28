@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Battery-Notifier (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Battery-Notifier (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
