@@ -1,87 +1,68 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Devices.Enumeration;
+﻿using System;
 using Windows.Devices.Power;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.UI.Notifications;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-namespace Battery_Notifier
+namespace App1
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class MainWindow : Window
+    public sealed partial class MainPage : Page
     {
         public int CurrentBatteryPecentage;
         public int CurrentSelctedMinBatteryPercentage = 20;
         public int CurrentSelctedMaxBatteryPercentage = 98;
-
-        public MainWindow()
+        public MainPage()
         {
             this.InitializeComponent();
             Battery.AggregateBattery.ReportUpdated += AggregateBattery_ReportUpdated;
-            
+
             RequestAggregateBatteryReport();
-         
+
 
             MinBatterySlider.Value = CurrentSelctedMinBatteryPercentage;
             MinBatterySlider.Maximum = 49;
 
-            MaxBatterySlider.Value=CurrentSelctedMaxBatteryPercentage;
+            MaxBatterySlider.Value = CurrentSelctedMaxBatteryPercentage;
             MaxBatterySlider.Minimum = 50;
+
         }
         private void MinBatterySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-
-            Slider slider = sender as Slider;
-            if (slider != null)
+            if (sender is Slider slider)
             {
                 CurrentSelctedMinBatteryPercentage = (int)slider.Value;
-              MinBatteryPercentageText.Text = "Min--> "+CurrentSelctedMinBatteryPercentage.ToString()+"%";
-                
+                MinBatteryPercentageText.Text = "Min--> " + CurrentSelctedMinBatteryPercentage.ToString() + "%";
+
             }
         }
         private void MaxBatterySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-
-            Slider slider = sender as Slider;
-            if (slider != null)
+            if (sender is Slider slider)
             {
                 CurrentSelctedMaxBatteryPercentage = (int)slider.Value;
-              MaxBatteryPercentageText.Text = "Max--> "+CurrentSelctedMaxBatteryPercentage.ToString()+"%";
-                
+                MaxBatteryPercentageText.Text = "Max--> " + CurrentSelctedMaxBatteryPercentage.ToString() + "%";
+
             }
         }
 
         private void ShowToastNotification(String BatteryPercentage, String slogan)
         {
             // Requires Microsoft.Toolkit.Uwp.Notifications NuGet package version 7.0 or greater
+            System.Diagnostics.Debug.WriteLine(slogan);
             new ToastContentBuilder()
-                .AddArgument("action", "viewConversation")
                 .AddArgument("conversationId", 9813)
-                .AddText("Battery reach "+BatteryPercentage+"% !")
+                .AddText("Battery reach " + BatteryPercentage + "% !")
                 .AddText(slogan)
                 .Show(); // Not seeing the Show() method? Make sure you have version 7.0, and if you're using .NET 5, your TFM must be net5.0-windows10.0.17763.0 or greater
         }
 
         private void BtnToast(object sender, RoutedEventArgs e)
         {
-            ShowToastNotification(CurrentSelctedMaxBatteryPercentage.ToString(),"disconnect charger !");
+            ShowToastNotification(CurrentBatteryPecentage.ToString(), "disconnect charger !");
         }
 
         private void GetBatteryReport(object sender, RoutedEventArgs e)
@@ -101,17 +82,20 @@ namespace Battery_Notifier
 
             // Get report
             var report = aggBattery.GetReport();
-        
+            var result = (double)((Convert.ToDouble(report.RemainingCapacityInMilliwattHours) / Convert.ToDouble(report.FullChargeCapacityInMilliwattHours)) * 100);
+
             // Update BatteryPercentage
-            CurrentBatteryPecentage = (int)((Convert.ToDouble(report.RemainingCapacityInMilliwattHours) / Convert.ToDouble(report.FullChargeCapacityInMilliwattHours)) * 100);
-           
-            
+            CurrentBatteryPecentage = (int)result;
+            System.Diagnostics.Debug.WriteLine("Requesting Battery ...!"+result.ToString());
+
+
             // checking battery status and show toast message
 
-            if(report.Status.ToString().TrimEnd() == "Discharging" && CurrentBatteryPecentage == CurrentSelctedMinBatteryPercentage) {
+            if (report.Status.ToString().TrimEnd() == "Discharging" && CurrentBatteryPecentage == CurrentSelctedMinBatteryPercentage)
+            {
                 ShowToastNotification(CurrentBatteryPecentage.ToString(), "Please Connect  the Charger");
             }
-            else if(CurrentBatteryPecentage == CurrentSelctedMaxBatteryPercentage)
+            else if (CurrentBatteryPecentage == CurrentSelctedMaxBatteryPercentage)
             {
                 ShowToastNotification(CurrentBatteryPecentage.ToString(), "Please Disconnect Charger !");
             }
@@ -122,34 +106,35 @@ namespace Battery_Notifier
         private static void AddReportUI(StackPanel sp, BatteryReport report, string DeviceID)
         {
             // Create battery report UI
-            TextBlock txt1 = new() { Text = "Device ID: " + DeviceID };
+            TextBlock txt1 = new TextBlock { Text = "Device ID: " + DeviceID };
             txt1.FontSize = 15;
             txt1.Margin = new Thickness(0, 15, 0, 0);
             txt1.TextWrapping = TextWrapping.WrapWholeWords;
 
-            TextBlock txt2 = new (){ Text = "Battery status: " + report.Status.ToString() };
+            TextBlock txt2 = new TextBlock { Text = "Battery status: " + report.Status.ToString() };
             txt2.FontStyle = Windows.UI.Text.FontStyle.Italic;
             txt2.Margin = new Thickness(0, 0, 0, 15);
 
-            TextBlock txt3 = new (){ Text = "Charge rate (mW): " + report.ChargeRateInMilliwatts.ToString() };
-            TextBlock txt4 = new () { Text = "Design energy capacity (mWh): " + report.DesignCapacityInMilliwattHours.ToString() };
-            TextBlock txt5 = new () { Text = "Fully-charged energy capacity (mWh): " + report.FullChargeCapacityInMilliwattHours.ToString() };
-            TextBlock txt6 = new () { Text = "Remaining energy capacity (mWh): " + report.RemainingCapacityInMilliwattHours.ToString() };
+            TextBlock txt3 = new TextBlock { Text = "Charge rate (mW): " + report.ChargeRateInMilliwatts.ToString() };
+            TextBlock txt4 = new TextBlock { Text = "Design energy capacity (mWh): " + report.DesignCapacityInMilliwattHours.ToString() };
+            TextBlock txt5 = new TextBlock { Text = "Fully-charged energy capacity (mWh): " + report.FullChargeCapacityInMilliwattHours.ToString() };
+            TextBlock txt6 = new TextBlock { Text = "Remaining energy capacity (mWh): " + report.RemainingCapacityInMilliwattHours.ToString() };
 
             // Create energy capacity progress bar & labels
-            TextBlock pbLabel = new () { Text = "Percent remaining energy capacity" };
+            TextBlock pbLabel = new TextBlock { Text = "Percent remaining energy capacity" };
             pbLabel.Margin = new Thickness(0, 10, 0, 5);
             pbLabel.FontFamily = new FontFamily("Segoe UI");
             pbLabel.FontSize = 11;
 
-            ProgressBar pb = new ();
-            pb.Margin = new Thickness(0, 5, 0, 0);
-            pb.Width = 200;
-            pb.Height = 10;
-            pb.IsIndeterminate = false;
-            pb.HorizontalAlignment = HorizontalAlignment.Left;
-
-            TextBlock pbPercent = new ();
+            ProgressBar pb = new ProgressBar
+            {
+                Margin = new Thickness(0, 5, 0, 0),
+                Width = 200,
+                Height = 10,
+                IsIndeterminate = false,
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+            TextBlock pbPercent = new TextBlock { };
             pbPercent.Margin = new Thickness(0, 5, 0, 10);
             pbPercent.FontFamily = new FontFamily("Segoe UI");
             pbLabel.FontSize = 11;
@@ -185,12 +170,13 @@ namespace Battery_Notifier
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
+                //System.Diagnostics.Debug.WriteLine("fetching battery status");
                 // Clear UI
                 BatteryReportPanel.Children.Clear();
 
                 RequestAggregateBatteryReport();
             });
-            
+
         }
     }
 }

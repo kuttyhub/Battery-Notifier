@@ -1,3 +1,3 @@
 # Battery-Notifier
 
-This project give you about notifiaction on the setedd max and min battery percentage!
+A UWP app to track battery status and pushes notification when battery reach  the levels user sets.
