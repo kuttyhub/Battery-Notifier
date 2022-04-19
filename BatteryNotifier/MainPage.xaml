@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="BatteryNotifier.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BatteryNotifier"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <StackPanel Orientation="Vertical">
+        <TextBlock HorizontalTextAlignment="Center" FontSize="24" FontWeight="Bold"> Battery Status</TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Orientation="Vertical">
+                <StackPanel x:Name="BatteryReportPanel" Margin="15,30,0,0">
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Width="423">
+                    <Button x:Name="GetBatteryReportButton" Margin="5,0,0,0" Click="GetBatteryReport">Update Status</Button>
+                    <Button Click="BtnToast">show Toast</Button>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <TextBlock Margin="10,30,0,0"  x:Name="MinBatteryPercentageText" Text="Min Percentage : 0%"/>
+                    <Slider x:Name="MinBatterySlider" Width="200" ValueChanged="MinBatterySlider_ValueChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                    <TextBlock Margin="10,30,0,0"  x:Name="MaxBatteryPercentageText" Text="Max Percetange : 100%"/>
+                    <Slider x:Name="MaxBatterySlider"  Width="200" ValueChanged="MaxBatterySlider_ValueChanged"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</Page>

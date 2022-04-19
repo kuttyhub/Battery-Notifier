@@ -6,7 +6,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace App1
+
+namespace BatteryNotifier
 {
     sealed partial class App : Application
     {
@@ -17,6 +18,7 @@ namespace App1
         }
         protected override void OnActivated(IActivatedEventArgs e)
         {
+            
             System.Diagnostics.Debug.WriteLine("OnActived Called..!");
             // Handle notification activation
             if (e is ToastNotificationActivatedEventArgs toastActivationArgs)
@@ -27,7 +29,7 @@ namespace App1
                 // Obtain any user input (text boxes, menu selections) from the notification
                 _ = toastActivationArgs.UserInput;
 
-                // TODO: Show the corresponding content
+                // TODO: Show the corresponding 
             }
         }
         protected override void OnLaunched(LaunchActivatedEventArgs e)
