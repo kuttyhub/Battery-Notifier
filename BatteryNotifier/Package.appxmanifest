@@ -4,18 +4,19 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   IgnorableNamespaces="uap mp">
 
   <Identity
     Name="2bbb0bfc-af3c-4cfb-8108-a90583854f68"
-    Publisher="CN=kutty"
-    Version="1.0.0.0" />
+    Publisher="CN=Nishanth S"
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="2bbb0bfc-af3c-4cfb-8108-a90583854f68" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>BatteryNotifier</DisplayName>
-    <PublisherDisplayName>kutty</PublisherDisplayName>
+    <PublisherDisplayName>Nishanth S</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,6 +32,14 @@
     <Application Id="App"
       Executable="$targetnametoken$.exe"
       EntryPoint="BatteryNotifier.App">
+      <Extensions>
+        <uap5:Extension Category="windows.startupTask">
+          <uap5:StartupTask
+					  TaskId="LaunchOnStartupTaskId"
+            Enabled="false"
+					  DisplayName="Battery Notifier" />
+        </uap5:Extension>
+      </Extensions>
       <uap:VisualElements
         DisplayName="BatteryNotifier"
         Square150x150Logo="Assets\Square150x150Logo.png"
