@@ -10,7 +10,7 @@
   <Identity
     Name="2bbb0bfc-af3c-4cfb-8108-a90583854f68"
     Publisher="CN=Nishanth S"
-    Version="1.0.1.0" />
+    Version="1.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="2bbb0bfc-af3c-4cfb-8108-a90583854f68" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -51,8 +51,4 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>

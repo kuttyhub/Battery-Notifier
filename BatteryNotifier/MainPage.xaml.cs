@@ -13,8 +13,8 @@ namespace BatteryNotifier
     public sealed partial class MainPage : Page
     {
         public int CurrentBatteryPecentage;
-        public int CurrentSelctedMinBatteryPercentage = 15;
-        public int CurrentSelctedMaxBatteryPercentage = 98;
+        public int CurrentSelctedMinBatteryPercentage;
+        public int CurrentSelctedMaxBatteryPercentage;
         public const string MIN_BATTERY_VALUE = "MIN_BATTERY_VALUE";
         public const string MAX_BATTERY_VALUE = "MAX_BATTERY_VALUE";
         public const string APP_STORAGE = "APP_STORAGE";
@@ -23,19 +23,21 @@ namespace BatteryNotifier
             this.InitializeComponent();
             Battery.AggregateBattery.ReportUpdated += AggregateBattery_ReportUpdated;
 
+            SetStates();
+        }
 
+        private void SetStates()
+        {
             RequestAggregateBatteryReport();
 
+            CurrentSelctedMinBatteryPercentage = GetFromLocal(MIN_BATTERY_VALUE);
+            CurrentSelctedMaxBatteryPercentage = GetFromLocal(MAX_BATTERY_VALUE);
 
             MinBatterySlider.Value = CurrentSelctedMinBatteryPercentage;
             MinBatterySlider.Maximum = 49;
 
             MaxBatterySlider.Value = CurrentSelctedMaxBatteryPercentage;
             MaxBatterySlider.Minimum = 50;
-
-            CurrentSelctedMinBatteryPercentage = GetFromLocal(MIN_BATTERY_VALUE);
-            CurrentSelctedMaxBatteryPercentage = GetFromLocal(MAX_BATTERY_VALUE);
-
         }
 
         private void StoreToLocal(string key, int value)
@@ -44,28 +46,23 @@ namespace BatteryNotifier
 
             if (key != null)
             {
-                ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-                ApplicationDataCompositeValue composite = new ApplicationDataCompositeValue
-                {
-                    [key] = value
-                };
-                roamingSettings.Values[APP_STORAGE] = composite;
+                ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+                localSettings.Values[key] = value;
             }
         }
+
         private int GetFromLocal(string key)
         {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
 
-            ApplicationDataCompositeValue composite = (ApplicationDataCompositeValue)roamingSettings.Values[APP_STORAGE];
-            int result = key == MIN_BATTERY_VALUE ? 15 : 98;
-            if (composite != null)
-            {
-                var data = composite[key];
-                if (data != null)
-                    result = Convert.ToInt32(data);
-                System.Diagnostics.Debug.WriteLine(result, "retrived data");
+            //System.Diagnostics.Debug.WriteLine(key);
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
-            }
+            int result = key == MIN_BATTERY_VALUE ? 25 : 99;
+            if (localSettings.Values.ContainsKey(key)) 
+                result = (int)localSettings.Values[key];
+          
+            //System.Diagnostics.Debug.WriteLine(result, "retrived data");
+
             return result;
         }
         private void MinBatterySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -128,8 +125,8 @@ namespace BatteryNotifier
             // Update BatteryPercentage
             CurrentBatteryPecentage = Convert.ToInt32(result);
 
-            System.Diagnostics.Debug.WriteLine("Requesting Battery ...!" + result.ToString());
-            System.Diagnostics.Debug.WriteLine("Min ->" + CurrentSelctedMinBatteryPercentage.ToString());
+            //System.Diagnostics.Debug.WriteLine("Requesting Battery ...!" + result.ToString());
+            //System.Diagnostics.Debug.WriteLine("Min ->" + CurrentSelctedMinBatteryPercentage.ToString());
 
 
             // checking battery status and show toast message
